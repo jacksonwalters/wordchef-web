@@ -1,2 +1,2 @@
 # wordchef
-Flask+Gunicorn+nginx webapp to find average of words.
+Flask+Gunicorn+nginx webapp to take linear combinations of words.
