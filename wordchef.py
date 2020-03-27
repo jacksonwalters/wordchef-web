@@ -5,7 +5,7 @@ from similar import sim_words_from_vec
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'play-it-as-it-lays'
-#nlp = spacy.load('en_core_web_sm')
+nlp = spacy.load('en_core_web_sm')
 
 @app.route("/wordchef/", methods=['GET','POST'])
 def recipe():
@@ -31,5 +31,4 @@ def recipe():
 	return render_template('recipe.html', title='word+chef', form=form)
 
 if __name__ == "__main__":
-	nlp = spacy.load('en_core_web_md')
 	app.run(host='0.0.0.0')
