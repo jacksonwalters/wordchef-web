@@ -32,4 +32,4 @@ def recipe():
 
 if __name__ == "__main__":
 	nlp = spacy.load('en_core_web_md')
-    app.run(host='0.0.0.0')
+	app.run(host='0.0.0.0')
