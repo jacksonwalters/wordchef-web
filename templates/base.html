@@ -3,19 +3,21 @@
       {% if title %}
       <title>{{ title }}</title>
       {% else %}
-      <title>Welcome</title>
+      <title>Welcome!</title>
       {% endif %}
     </head>
     <body>
-	{% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <ul>
-            {% for message in messages %}
-            <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-        {% endwith %}
+        <!-- display content -->
         {% block content %}{% endblock %}
+        <!-- flash result of form submit-->
+        {% with messages = get_flashed_messages() %}
+              {% if messages %}
+              <ul>
+                  {% for message in messages %}
+                  <li>{{ message }}</li>
+                  {% endfor %}
+              </ul>
+              {% endif %}
+              {% endwith %}
     </body>
 </html>
