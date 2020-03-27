@@ -9,14 +9,14 @@ nlp = spacy.load('en_core_web_sm')
 def recipe():
 	form = RecipeForm()
 	if form.validate_on_submit():
-		#retrieve words
+		#retrieve words from form
 		word1 = form.word1.data
 		word2 = form.word2.data
-		#use spacy to get word vectors
-		vec1 = nlp(form.word1.data).vector
-		vec2 = nlp(form.word2.data).vector
-		#add the vectors
-		vec_sum = vec1 + vec2
+		#use spacy to get tokens
+		token1 = [token for token in nlp(word1)][0]
+		token2 = [token for token in nlp(word2)][0]
+		#add the word vectors
+		vec_sum = token1.vector + token2.vector
 		#look up synonym from vector sum
 		#for now, just return sum as string
 		sum_word = ','.join(vec_sum.astype(str))
