@@ -5,12 +5,14 @@ from similar import sim_words_from_vec
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'play-it-as-it-lays'
-nlp = spacy.load('en_core_web_sm')
+#nlp = spacy.load('en_core_web_sm')
 
 @app.route("/wordchef/", methods=['GET','POST'])
 def recipe():
 	form = RecipeForm()
 	if form.validate_on_submit():
+		#try loading larger spacy here
+		nlp = spacy.load('en_core_web_md')
 		#retrieve words from form
 		word1 = form.word1.data
 		word2 = form.word2.data
@@ -19,10 +21,11 @@ def recipe():
 		token2 = [token for token in nlp(word2)][0]
 		#add the word vectors
 		vec_sum = token1.vector + token2.vector
-		#look up synonym from vector sum
-		#for now, just return sum as string
 
+		#just return sum as string
 		#sum_word = ','.join(vec_sum.astype(str))
+
+		#look up synonym from vector sum
 		sum_word = ','.join(sim_words_from_vec(nlp.vocab,vec_sum))
 
 		#flash the result
