@@ -25,7 +25,6 @@ if __name__ != '__main__':
 
 @app.route("/wordchef/", methods=['GET','POST'])
 def recipe():
-	app.logger.info('flask routed to /wordchef')
 	form = RecipeForm()
 	if form.validate_on_submit():
 
