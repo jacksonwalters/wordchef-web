@@ -20,7 +20,7 @@ if __name__ != '__main__':
 	#nlp=spacy.load("en_core_web_md")
 	nlp=spacy.load("en_core_web_lg")
 	#prob controls number of queries to search. {-15:32k, -16:50k, -17:77k, -18:147k, -19:183k, -20:563k}
-	queries = [w for w in nlp.vocab if w.is_lower and w.prob >= -17 and w.has_vector]
+	queries = [w for w in nlp.vocab if w.is_lower and w.prob >= -16 and w.has_vector]
 	app.logger.info('finished loading nlp.')
 
 @app.route("/wordchef/", methods=['GET','POST'])
