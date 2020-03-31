@@ -9,10 +9,12 @@ app.config['SECRET_KEY'] = 'play-it-as-it-lays'
 
 #if not run directly, enable gunicorn level logging
 if __name__ != '__main__':
+	#set loggers to gunicorn
 	gunicorn_logger = logging.getLogger('gunicorn.error')
 	app.logger.handlers = gunicorn_logger.handlers
 	app.logger.setLevel(gunicorn_logger.level)
 
+	#load natural language processing spacy
 	app.logger.info('not running as __main__')
 	app.logger.info('loading nlp...')
 	nlp=spacy.load("en_core_web_md")
