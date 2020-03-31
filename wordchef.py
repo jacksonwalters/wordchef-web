@@ -17,7 +17,11 @@ if __name__ != '__main__':
 	#load natural language processing spacy
 	app.logger.info('not running as __main__')
 	app.logger.info('loading nlp...')
-	nlp=spacy.load("en_core_web_md")
+
+	#medium requires server w/ 4gb RAM, large requires 8gb
+	#nlp=spacy.load("en_core_web_md")
+	nlp=spacy.load("en_core_web_lg")
+
 	app.logger.info('finished loading nlp.')
 
 @app.route("/wordchef/", methods=['GET','POST'])
