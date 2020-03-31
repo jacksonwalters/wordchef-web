@@ -26,25 +26,32 @@ if __name__ != '__main__':
 
 @app.route("/wordchef/", methods=['GET','POST'])
 def recipe():
+	app.logger.info('flask routed to /wordchef')
 	form = RecipeForm()
 	if form.validate_on_submit():
 
-		#retrieve words from form
+		app.logger.info('form validated')
+
+		#retrieve word data from form
 		word1 = form.word1.data
 		word2 = form.word2.data
+
+		#retrieve proportion data from form
+		amount1 = form.amount1.data
+		amount2 = form.amount2.data
 
 		#use spacy to get tokens
 		token1 = [token for token in nlp(word1)][0]
 		token2 = [token for token in nlp(word2)][0]
 
 		#add the word vectors
-		vec_sum = token1.vector + token2.vector
+		vec_sum = amount1*token1.vector + amount2*token2.vector
 
 		#look up synonym from vector sum
 		sum_word = ','.join(sim_words_from_vec(nlp.vocab,vec_sum))
 
 		#flash the result
-		flash('{}+{}~[{}]'.format(word1, word2, sum_word))
+		flash('{}*{}+{}*{}~[{}]'.format(amount1,word1,amount2,word2,sum_word))
 		return redirect('/wordchef')
 	return render_template('recipe.html', title='word+chef', form=form)
 
