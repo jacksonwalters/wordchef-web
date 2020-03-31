@@ -15,13 +15,12 @@ if __name__ != '__main__':
 	app.logger.setLevel(gunicorn_logger.level)
 
 	#load natural language processing spacy
-	app.logger.info('not running as __main__')
+	#md requires server w/ 4gb RAM, lg requires 8gb
 	app.logger.info('loading nlp...')
-
-	#medium requires server w/ 4gb RAM, large requires 8gb
 	#nlp=spacy.load("en_core_web_md")
 	nlp=spacy.load("en_core_web_lg")
-
+	#prob controls number of queries to search. {-15:32k, -16:50k, -17:77k, -18:147k, -19:183k, -20:563k}
+	queries = [w for w in nlp.vocab if w.is_lower and w.prob >= -17 and w.has_vector]
 	app.logger.info('finished loading nlp.')
 
 @app.route("/wordchef/", methods=['GET','POST'])
@@ -48,7 +47,7 @@ def recipe():
 		vec_sum = amount1*token1.vector + amount2*token2.vector
 
 		#look up synonym from vector sum
-		sum_word = ','.join(sim_words_from_vec(nlp.vocab,vec_sum))
+		sum_word = ','.join(sim_words_from_vec(queries,vec_sum))
 
 		#flash the result
 		flash('{}*{}+{}*{}~[{}]'.format(amount1,word1,amount2,word2,sum_word))
