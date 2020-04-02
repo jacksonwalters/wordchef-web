@@ -28,9 +28,9 @@ def recipe():
 	form = RecipeForm()
 	if form.validate_on_submit():
 
-		#retrieve word data from form
-		word1 = form.word1.data
-		word2 = form.word2.data
+		#retrieve word data from form. ""->" " if (optionally) empty
+		word1 = (" " if form.word1.data == "" else form.word1.data)
+		word2 = (" " if form.word2.data == "" else form.word2.data)
 
 		#retrieve proportion data from form. 1 if (optionally) empty
 		amount1 = (1 if form.amount1.data == None else form.amount1.data)
@@ -40,8 +40,12 @@ def recipe():
 		token1 = [token for token in nlp(word1)][0]
 		token2 = [token for token in nlp(word2)][0]
 
+		#get wordvectors from tokens
+		vec1 = token1.vector
+		vec2 = token2.vector
+
 		#add the word vectors
-		vec_sum = amount1*token1.vector + amount2*token2.vector
+		vec_sum = amount1*vec1 + amount2*vec2
 
 		#look up synonym from vector sum
 		sum_word = ','.join(sim_words_from_vec(queries,vec_sum))
