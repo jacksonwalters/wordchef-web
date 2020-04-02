@@ -7,7 +7,7 @@
     <!-- Logo -->
     <div id="logo">
     <h1><a href="#">word+chef</a></h1><br>
-    <h3>A wicked smaht thesaurus. Tyranno(the)saurus rex. Mama Mia oh my.</h3>
+    <span>A wicked smaht thesaurus. Tyranno(the)saurus rex. Mama Mia oh my.</span>
     <p>Choose proportions (as numbers) of ingridients (as words) and mix them together!</p>
     <form action="" method="post" novalidate>
         {{ form.hidden_tag() }}
@@ -31,6 +31,16 @@
         </p>
         <p>{{ form.submit() }}</p>
     </form>
+    <!-- flash result of form submit-->
+    {% with messages = get_flashed_messages() %}
+          {% if messages %}
+          <ul>
+              {% for message in messages %}
+              <li style="color: white;">{{ message }}</li>
+              {% endfor %}
+          </ul>
+          {% endif %}
+    {% endwith %}
    </div>
   </div>
 </div>
