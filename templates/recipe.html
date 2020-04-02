@@ -8,11 +8,23 @@
         {{ form.hidden_tag() }}
         <p>
             {{ form.amount1.label }} {{ form.word1.label }}<br>
-            {{ form.amount1(size=4)}} {{ form.word1(size=16) }}
+            {{ form.amount1(size=4)}} {{ form.word1(size=16) }}<br>
+            {% for error in form.amount1.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+            {% for error in form.word1.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
         </p>
         <p>
             {{ form.amount2.label }} {{ form.word2.label }}<br>
-            {{ form.amount2(size=4) }} {{ form.word2(size=16) }}
+            {{ form.amount2(size=4) }} {{ form.word2(size=16) }}<br>
+            {% for error in form.amount2.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+            {% for error in form.word2.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
         </p>
         <p>{{ form.submit() }}</p>
     </form>

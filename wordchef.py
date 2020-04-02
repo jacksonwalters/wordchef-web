@@ -34,9 +34,9 @@ def recipe():
 		word1 = form.word1.data
 		word2 = form.word2.data
 
-		#retrieve proportion data from form
-		amount1 = form.amount1.data
-		amount2 = form.amount2.data
+		#retrieve proportion data from form. 1 if (optionally) empty
+		amount1 = (1 if form.amount1.data == None else form.amount1.data)
+		amount2 = (1 if form.amount2.data == None else form.amount2.data)
 
 		#use spacy to get tokens
 		token1 = [token for token in nlp(word1)][0]
