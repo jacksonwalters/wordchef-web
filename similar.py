@@ -1,13 +1,11 @@
 from scipy import spatial
-
-#cosine similarity of two vectors
-def cos_sim(vec1,vec2):
-	return 1-spatial.distance.cosine(vec1,vec2)
+import numpy as np
 
 #find most similar word given word vector
-def sim_words_from_vec(vocab,word_vec):
-	#prob controls number of queries to search. -15=32k, -18=147k, -20=563k.
-	queries = [w for w in vocab if w.is_lower and w.prob >= -16 and w.has_vector]
-	by_similarity = sorted(queries, key=lambda w: cos_sim(w.vector,word_vec), reverse=True)
+#use either cosine similarity (reverse=True) or euclidean dist.
+def sim_words_from_vec(queries,word_vec):
+	#must use euc_dist if word_vec is all zeros
+	dist = spatial.distance.cosine if np.any(word_vec) else spatial.distance.euclidean
+	by_similarity = sorted(queries, key=lambda w: dist(w.vector,word_vec))
 	sim_tokens = by_similarity[:10]
 	return [token.text for token in sim_tokens]

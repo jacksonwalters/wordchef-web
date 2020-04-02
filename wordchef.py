@@ -28,8 +28,6 @@ def recipe():
 	form = RecipeForm()
 	if form.validate_on_submit():
 
-		app.logger.info('form validated')
-
 		#retrieve word data from form
 		word1 = form.word1.data
 		word2 = form.word2.data
@@ -54,5 +52,4 @@ def recipe():
 	return render_template('recipe.html', title='word+chef', form=form)
 
 if __name__ == "__main__":
-	app.logger.info('running as __main__')
 	app.run(host='0.0.0.0', debug=True)
