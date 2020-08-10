@@ -36,7 +36,7 @@ for i in range(0,num_files):
 	with open('words_'+str(i)+'.pkl', 'wb') as f:
 		pickle.dump(words_i,f,protocol=pickle.HIGHEST_PROTOCOL)
 	with open('wordvecs_'+str(i)+'.pkl', 'wb') as f:
-		pickle.dump(wordvecs_i,f,protocol=pickle.HIGHEST_PROTOCOL)
+		pickle.dump(tree_i,f,protocol=pickle.HIGHEST_PROTOCOL)
 	
 #if number of files does not evenly divide file length, append final file
 if len(words) % num_files != 0:
@@ -44,6 +44,7 @@ if len(words) % num_files != 0:
 	print("Writing file #"+str(last_ind)+"...")
 	last_words = words[num_files*file_len:num_files*file_len+len(words)%num_files]
 	last_wordvecs = wordvecs[num_files*file_len:num_files*file_len+len(words)%num_files]
+	last_tree = nbs.BallTree(last_wordvecs)
 	with open('words_'+str(last_ind)+'.pkl', 'wb') as f:
 		pickle.dump(last_words,f,protocol=pickle.HIGHEST_PROTOCOL)
 	with open('wordvecs_'+str(last_ind)+'.pkl', 'wb') as f:
