@@ -23,6 +23,15 @@ assert len(words) == len(wordvecs)
 spot_check = random.choice(range(0,len(words)))
 assert numpy.array_equal(nlp(words[spot_check]).vector,wordvecs[spot_check])
 
+#pickle the entire vocab
+with open('words.pkl', 'wb') as f:
+		pickle.dump(words,f,protocol=pickle.HIGHEST_PROTOCOL)
+
+#place all wordvectors in balltree, and pickle entire tree
+tree = nbs.BallTree(wordvecs)
+with open('wordvecs.pkl', 'wb') as f:
+		pickle.dump(tree,f,protocol=pickle.HIGHEST_PROTOCOL)
+
 #split words into separate files of ~22k words/wordvectors each
 #~17 bytes/word, as each word is at most ~17 characters
 #~1.2 mB/vector, as each vector is 300 rational numbers
