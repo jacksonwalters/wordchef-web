@@ -48,7 +48,7 @@ if len(words) % num_files != 0:
 	with open('words_'+str(last_ind)+'.pkl', 'wb') as f:
 		pickle.dump(last_words,f,protocol=pickle.HIGHEST_PROTOCOL)
 	with open('wordvecs_'+str(last_ind)+'.pkl', 'wb') as f:
-		pickle.dump(last_wordvecs,f,protocol=pickle.HIGHEST_PROTOCOL)
+		pickle.dump(last_tree,f,protocol=pickle.HIGHEST_PROTOCOL)
 	
 	
 	
