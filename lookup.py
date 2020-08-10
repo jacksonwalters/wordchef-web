@@ -5,7 +5,7 @@ import pickle
 #compute linear combination amounts*vec(words). find nearest neighbor words.
 def nearest_words(amounts,words):
 	#load {word:vector} dictionary from pickle
-	with open('dict.pkl') as f:
+	with open('dict.pkl','rb') as f:
 		to_vec = pickle.load(f)
 
 	#get vectors for all words
@@ -29,7 +29,7 @@ def nearest_words(amounts,words):
 		lin_comb += amounts[i]*vecs[i]
 	
 	#load wordvector balltree from pickle file 
-	with open('balltree.pkl') as f:
+	with open('balltree.pkl','rb') as f:
 		tree = pickle.load(f)
 	
 	#perform nearest neighbor search of wordvector vocabulary
@@ -39,7 +39,7 @@ def nearest_words(amounts,words):
 	tree = None
 
 	#load vocab from pickle file
-	with open('words.pkl') as f:
+	with open('words.pkl','rb') as f:
 		vocab = pickle.load(f)
 	
 	#lookup nearest words using indices from tree
@@ -47,7 +47,9 @@ def nearest_words(amounts,words):
 	
 	#clear vocab from memory
 	vocab = None
-
+	
+	print("Finished.")
+	print(near_words)
 	return near_words
 	
 	
