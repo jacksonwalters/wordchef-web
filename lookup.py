@@ -28,12 +28,11 @@ def nearest_words(amounts,words):
 	for i in range(n):
 		lin_comb += amounts[i]*vecs[i]
 	
-
 	#load wordvector balltree from pickle file 
 	with open('balltree.pkl') as f:
 		tree = pickle.load(f)
 	
-	#perform nearest neighbors search of 
+	#perform nearest neighbor search of wordvector vocabulary
 	dist, ind = tree.query([lin_comb],5)
 	
 	#clear tree from memory
@@ -42,7 +41,14 @@ def nearest_words(amounts,words):
 	#load vocab from pickle file
 	with open('words.pkl') as f:
 		vocab = pickle.load(f)
+	
+	#lookup nearest words using indices from tree
+	near_words = [vocab[i] for i in ind[0]]
+	
+	#clear vocab from memory
+	vocab = None
 
+	return near_words
 	
 	
 	
