@@ -1,6 +1,7 @@
 import numpy
 import sklearn
 import pickle
+import gc
 
 #compute linear combination amounts*vec(words). find nearest neighbor words.
 def nearest_words(amounts,words):
@@ -20,6 +21,7 @@ def nearest_words(amounts,words):
 	
 	#clear dictionary from memory
 	to_vec = None
+	gc.collect()
 
 	#compute linear combination of user wordvectors
 	assert len(vecs) == len(amounts)
@@ -33,10 +35,11 @@ def nearest_words(amounts,words):
 		tree = pickle.load(f)
 	
 	#perform nearest neighbor search of wordvector vocabulary
-	dist, ind = tree.query([lin_comb],5)
+	dist, ind = tree.query([lin_comb],10)
 	
 	#clear tree from memory
 	tree = None
+	gc.collect()
 
 	#load vocab from pickle file
 	with open('words.pkl','rb') as f:
@@ -47,10 +50,6 @@ def nearest_words(amounts,words):
 	
 	#clear vocab from memory
 	vocab = None
+	gc.collect()
 	
-	print("Finished.")
-	print(near_words)
 	return near_words
-	
-	
-	
