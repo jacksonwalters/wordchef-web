@@ -38,24 +38,6 @@
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
-        <p>
-            {{ form.amount4(size=4) }} {{ form.word4(size=16) }}<br>
-            {% for error in form.amount4.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-            {% for error in form.word4.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>
-            {{ form.amount5(size=4) }} {{ form.word5(size=16) }}<br>
-            {% for error in form.amount5.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-            {% for error in form.word5.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
         <p>{{ form.submit() }}</p>
     </form>
     <!-- flash result of form submit-->

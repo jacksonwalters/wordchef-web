@@ -21,13 +21,15 @@ def recipe():
 		#retrieve proportion data from form. 1 if (optionally) empty
 		amount1 = (1 if form.amount1.data == None else form.amount1.data)
 		amount2 = (1 if form.amount2.data == None else form.amount2.data)
-		amounts = [amount1,amount2]
+		amount3 = (1 if form.amount3.data == None else form.amount3.data)
+		amounts = [amount1,amount2,amount3]
 
 		#retrieve word data from form. ""->" " if (optionally) empty
 		word1 = (" " if form.word1.data == "" else form.word1.data)
 		word2 = (" " if form.word2.data == "" else form.word2.data)
-		words = [word1,word2]
-		
+		word3 = (" " if form.word3.data == "" else form.word3.data)
+		words = [word1,word2,amount3]
+
 		#look up synonyms from vector sum
 		result = ','.join(nearest_words(amounts,words))
 
