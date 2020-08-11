@@ -12,7 +12,6 @@ if __name__ != '__main__':
 	gunicorn_logger = logging.getLogger('gunicorn.error')
 	app.logger.handlers = gunicorn_logger.handlers
 	app.logger.setLevel(gunicorn_logger.level)
-	
 
 @app.route("/", methods=['GET','POST'])
 def recipe():
@@ -30,8 +29,7 @@ def recipe():
 		words = [word1,word2]
 		
 		#look up synonyms from vector sum
-		sim_words = nearest_words(amounts,words,to_vec,tree,vocab)
-		result = ','.join(sim_words)
+		result = ','.join(nearest_words(amounts,words))
 
 		#flash the result
 		flash('{}*{}+{}*{}~[{}]'.format(amount1,word1,amount2,word2,result))
