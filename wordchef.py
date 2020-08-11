@@ -34,7 +34,7 @@ def recipe():
 		result = ','.join(nearest_words(amounts,words))
 
 		#flash the result
-		flash('{}*{}+{}*{}~[{}]'.format(amount1,word1,amount2,word2,result))
+		flash('{}*{}+{}*{}+{}*{}~[{}]'.format(amount1,word1,amount2,word2,amount3,word3,result))
 		return redirect('/')
 	return render_template('recipe.html', title='word+chef', form=form)
 
