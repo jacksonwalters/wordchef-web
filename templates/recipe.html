@@ -6,9 +6,11 @@
   <div class="container">
     <!-- Logo -->
     <div id="logo">
-    <h1><a href="#">word+chef</a></h1><br>
-    <span>A wicked smaht thesaurus. Mama Mia!</span>
-    <p>Choose proportions (as numbers) of ingridients (as words) and mix them together!</p>
+    <h1>word+chef</h1>
+    <br>
+    <span>A mathematical thesaurus.</span>
+    <p>Maps words to vectors using word2vec. Takes linear combination of wordvectors, then finds similar wordvectors by cosine similarity and returns corresponding words.</p>
+    <p>Choose proprotions (numbers) of ingridients (words) and mix (add) them together.</p>
     <form action="" method="post" novalidate>
         {{ form.hidden_tag() }}
         <p>
