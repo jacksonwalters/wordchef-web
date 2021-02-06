@@ -60,11 +60,13 @@ def recipe():
 		word3 = (" " if form.word3.data == "" else form.word3.data.strip().lower())
 		words = [word1,word2,word3]
 
+		#flash the input
+		flash('{}*{}+{}*{}+{}*{}~'.format(amount1,word1,amount2,word2,amount3,word3),'input')
+
 		#look up synonyms from vector sum
 		result = ','.join(nearest_words(amounts,words))
+		flash(result,'output')
 
-		#flash the result
-		flash('{}*{}+{}*{}+{}*{}~[{}]'.format(amount1,word1,amount2,word2,amount3,word3,result))
 		return redirect('/')
 	return render_template('recipe.html', title='word+chef', form=form)
 

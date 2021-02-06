@@ -58,18 +58,29 @@
         </div>
     </form>
     </section>
-    <!-- flash result of form submit-->
+
     <section>
-    {% with messages = get_flashed_messages() %}
-          {% if messages %}
-          <ul>
-              {% for message in messages %}
-              <li style="color: black;">{{ message }}</li>
-              {% endfor %}
-          </ul>
-          {% endif %}
-    {% endwith %}
+    <!-- display formatted user input -->
+    {% with inputs = get_flashed_messages(category_filter=["input"]) %}
+      {% if inputs %}
+          {% for message in inputs %}
+            <h2>{{ message }}</h2>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+      <!-- display ordered list of results -->
+      {% with messages = get_flashed_messages(category_filter=["output"]) %}
+            {% if messages %}
+            <ol>
+                {% for message in messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+            </ol>
+            {% endif %}
+      {% endwith %}
     </section>
+
+
    </div>
   </div>
 </div>
