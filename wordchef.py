@@ -61,11 +61,12 @@ def recipe():
 		words = [word1,word2,word3]
 
 		#flash the input
-		flash('{}*{}+{}*{}+{}*{}~'.format(amount1,word1,amount2,word2,amount3,word3),'input')
+		flash('{} {}+{} {}+{} {}'.format(amount1,word1,amount2,word2,amount3,word3),'input')
 
 		#look up synonyms from vector sum
-		result = ','.join(nearest_words(amounts,words))
-		flash(result,'output')
+		result = nearest_words(amounts,words)
+		for word in result:
+			flash(word,'output')
 
 		return redirect('/')
 	return render_template('recipe.html', title='word+chef', form=form)

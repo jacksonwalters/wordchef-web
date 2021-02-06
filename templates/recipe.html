@@ -63,17 +63,17 @@
     <!-- display formatted user input -->
     {% with inputs = get_flashed_messages(category_filter=["input"]) %}
       {% if inputs %}
-          {% for message in inputs %}
-            <h2>{{ message }}</h2>
+          {% for input in inputs %}
+          <p><b>{{ input }}</b></p>
           {% endfor %}
         {% endif %}
       {% endwith %}
       <!-- display ordered list of results -->
-      {% with messages = get_flashed_messages(category_filter=["output"]) %}
-            {% if messages %}
+      {% with outputs = get_flashed_messages(category_filter=["output"]) %}
+            {% if outputs %}
             <ol>
-                {% for message in messages %}
-                <li>{{ message }}</li>
+                {% for output in outputs %}
+                <li>{{ output }}</li>
                 {% endfor %}
             </ol>
             {% endif %}
