@@ -10,8 +10,11 @@ print("Loading spaCy...")
 nlp=spacy.load("en_core_web_lg")
 print("spaCy loaded.")
 
+print({nlp.vocab[word].prob for word in nlp.vocab.strings})
+
 #get plaintext words as list from spacy vocab. ensure they have wordvector, are lowercase, and aren't too rare
 #{prob:# words} ~ {-15:32k, -16:50k, -17:77k, -18:147k, -19:183k, -20:302k}
+#as of spaCy v3.0, word probabilities require spacy-lookup-data
 print("Total number of words=",len(nlp.vocab.strings))
 print("Getting words...")
 words = [word for word in nlp.vocab.strings if nlp.vocab.has_vector(word) and word.islower()]
@@ -44,4 +47,4 @@ print("Dumped wordvector BallTree to pickle file balltree.pkl")
 dict = dict(zip(words,wordvecs))
 with open('dict.pkl', 'wb') as f:
 		pickle.dump(dict,f,protocol=pickle.HIGHEST_PROTOCOL)
-print("Dumped wordvector BallTree to pickle file wordvecs.pkl")
+print("Dumped word2vec dictionary in dict.pkl")
