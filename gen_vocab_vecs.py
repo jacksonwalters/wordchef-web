@@ -10,8 +10,6 @@ print("Loading spaCy...")
 nlp=spacy.load("en_core_web_lg")
 print("spaCy loaded.")
 
-print({nlp.vocab[word].prob for word in nlp.vocab.strings})
-
 #get plaintext words as list from spacy vocab. ensure they have wordvector, are lowercase, and aren't too rare
 #{prob:# words} ~ {-15:32k, -16:50k, -17:77k, -18:147k, -19:183k, -20:302k}
 #as of spaCy v3.0, word probabilities require spacy-lookup-data
