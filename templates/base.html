@@ -1,27 +1,21 @@
+<!DOCTYPE HTML>
 <html>
     <head>
       {% if title %}
       <title>{{ title }}</title>
       {% else %}
-      <title>Welcome!</title>
+      <title>Home</title>
       {% endif %}
 
-      <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
       <meta name="description" content="App to mix different amounts of words together like a recipe." />
       <meta name="keywords" content="word,chef,add,mix,thesaurus,words,math,word2vec,similar" />
-      <link href='http://fonts.googleapis.com/css?family=Oxygen:400,300,700' rel='stylesheet' type='text/css'>
-      <!--[if lte IE 8]><script src="js/html5shiv.js"></script><![endif]-->
-      <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-      <script src="../js/skel.min.js"></script>
-      <script src="../js/skel-panels.min.js"></script>
-      <script src="../js/init.js"></script>
-      <noscript>
-        <link type="text/css" rel="stylesheet" href="../css/skel-noscript.css" />
-        <link type="text/css" rel="stylesheet" href="../css/style.css" />
-      </noscript>
-      <!--[if lte IE 8]><link rel="stylesheet" href="css/ie/v8.css" /><![endif]-->
-      <!--[if lte IE 9]><link rel="stylesheet" href="css/ie/v9.css" /><![endif]-->
+      <meta name="author" content="Jackson Walters">
+
+      <!-- CSS stored in static folder in flask app  -->
+      <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}" />
+  		<noscript><link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}" /></noscript>
 
       <!-- Global site tag (gtag.js) - Google Analytics -->
       <script async src="https://www.googletagmanager.com/gtag/js?id=UA-47781877-5"></script>
@@ -33,7 +27,7 @@
           gtag('config', 'UA-47781877-5');
       </script>
     </head>
-    <body>
+    <body class="is-preload">
         <!-- display content -->
         {% block content %}{% endblock %}
     </body>

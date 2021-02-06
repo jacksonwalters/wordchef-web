@@ -1,48 +1,65 @@
 {% extends "base.html" %}
 
 {% block content %}
+<!-- Wrapper -->
+<div id="wrapper">
 <!-- Header -->
-<div id="header">
-  <div class="container">
-    <!-- Logo -->
-    <div id="logo">
+<div id="main">
+  <div class="inner">
     <h1>word+chef</h1>
-    <br>
-    <span>A mathematical thesaurus.</span>
-    <p>Maps words to vectors using word2vec. Takes linear combination of wordvectors, then finds similar wordvectors by cosine similarity and returns corresponding words.</p>
-    <p>Choose proprotions (numbers) of ingridients (words) and mix (add) them together.</p>
+    <section>
+    <p>Choose proprotions (numbers) of ingridients (words) and mix (add) them together!</p>
+    </section>
+    <!-- collect user input in form-->
+    <section>
     <form action="" method="post" novalidate>
         {{ form.hidden_tag() }}
-        <p>
-            {{ form.amount1(size=4)}} {{ form.word1(size=16) }}<br>
+        <div class="row gtr-uniform">
+          <div class="col-2">{{ form.amount1(size=4)}}</div>
+          <div class="col-4">{{ form.word1(size=16) }}</div>
+          <div class="col-6">
             {% for error in form.amount1.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
             {% for error in form.word1.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
-        </p>
-        <p>
-            {{ form.amount2(size=4) }} {{ form.word2(size=16) }}<br>
+          </div>
+
+          <div class="col-2">{{ form.amount2(size=4) }}</div>
+          <div class="col-4">{{ form.word2(size=16) }}</div>
+          <div class="col-6">
             {% for error in form.amount2.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
             {% for error in form.word2.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
-        </p>
-        <p>
-            {{ form.amount3(size=4) }} {{ form.word3(size=16) }}<br>
+          </div>
+
+          <div class="col-2">{{ form.amount3(size=4) }}</div>
+          <div class="col-4">{{ form.word3(size=16) }}</div>
+          <div class="col-6">
+
             {% for error in form.amount3.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
             {% for error in form.word3.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
-        </p>
-        <p>{{ form.submit() }}</p>
+          </div>
+
+        </div>
+        <br/>
+        <div class="col-12">
+          <ul class="actions">
+            <li>{{ form.submit() }}</li>
+          </ul>
+        </div>
     </form>
+    </section>
     <!-- flash result of form submit-->
+    <section>
     {% with messages = get_flashed_messages() %}
           {% if messages %}
           <ul>
@@ -52,8 +69,8 @@
           </ul>
           {% endif %}
     {% endwith %}
+    </section>
    </div>
   </div>
 </div>
-<!-- Header -->
 {% endblock %}
