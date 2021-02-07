@@ -1,6 +1,8 @@
 import spacy, numpy, random, pickle, pandas, sys
 import sklearn.neighbors as nbs
 
+MIN_PROB = 1e-6
+
 #as of spaCy v3.0, word probabilities require spacy-lookup-data
 #instead, using freq. table from Kaggle - https://www.kaggle.com/rtatman/english-word-frequency
 print("Loading word frequency table...")
@@ -20,7 +22,7 @@ print("spaCy loaded.")
 #get plaintext words as list from spacy vocab. ensure they have wordvector, are lowercase, and aren't too rare
 print("Total number of words=",len(nlp.vocab.strings))
 print("Getting words...")
-words = [word for word in nlp.vocab.strings if nlp.vocab.has_vector(word) and word.islower()]
+words = [word for word in nlp.vocab.strings if nlp.vocab.has_vector(word) and word.islower() and prob(word) >= MIN_PROB]
 print("Retrieved ",len(words),"words with vectors.")
 
 #get wordvectors for all words as numpy array
