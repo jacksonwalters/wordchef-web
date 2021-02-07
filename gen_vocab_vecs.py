@@ -38,7 +38,7 @@ assert numpy.array_equal(nlp(words[spot_check]).vector,wordvecs[spot_check])
 print("Spot check passed.")
 
 #pickle the entire vocab
-with open('words.pkl', 'wb') as f:
+with open('vocab.pkl', 'wb') as f:
 		pickle.dump(words,f,protocol=pickle.HIGHEST_PROTOCOL)
 print("Dumped vocab words to pickle file vocab.pkl")
 
