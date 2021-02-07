@@ -50,7 +50,7 @@ with open('balltree.pkl', 'wb') as f:
 		pickle.dump(tree,f,protocol=4)
 print("Dumped wordvector BallTree to pickle file balltree.pkl")
 
-#place all wordvectors in balltree, and pickle entire tree
+#create word:vector dict and pickle it
 dict = dict(zip(words,wordvecs))
 with open('dict.pkl', 'wb') as f:
 		pickle.dump(dict,f,protocol=4)
