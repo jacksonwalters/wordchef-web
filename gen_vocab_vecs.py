@@ -1,7 +1,7 @@
 import spacy, numpy, random, pickle, pandas, sys
 import sklearn.neighbors as nbs
 
-MIN_PROB = 1e-6
+MIN_PROB = 3e-6
 
 #as of spaCy v3.0, word probabilities require spacy-lookup-data
 #instead, using freq. table from Kaggle - https://www.kaggle.com/rtatman/english-word-frequency
