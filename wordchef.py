@@ -32,10 +32,7 @@ def nearest_words(amounts,words):
 	n = len(vecs)
 	mix_vec = numpy.zeros(300)
 	for i in range(n):
-		mix_vec += amounts[i]*vecs[i]
-	#optional: normalize so sum of amounts is 1
-	if sum(amounts)!=0:
-		mix_vec = mix_vec/sum(amounts)
+		mix_vec += amounts[i]*vecs[i]/n
 
 	#perform nearest neighbor search of wordvector vocabulary
 	dist, ind = tree.query([mix_vec],10)
