@@ -32,7 +32,7 @@ def nearest_words(amounts,words):
 	n = len(vecs)
 	mix_vec = numpy.zeros(300)
 	for i in range(n):
-		mix_vec += amounts[i]*vecs[i]/n
+		mix_vec += amounts[i]*vecs[i]
 
 	#perform nearest neighbor search of wordvector vocabulary
 	dist, ind = tree.query([mix_vec],10)
@@ -48,9 +48,9 @@ def recipe():
 	if form.validate_on_submit():
 
 		#retrieve proportion data from form. 1 if (optionally) empty
-		amount1 = (1 if form.amount1.data == None else form.amount1.data)
-		amount2 = (1 if form.amount2.data == None else form.amount2.data)
-		amount3 = (1 if form.amount3.data == None else form.amount3.data)
+		amount1 = (int(form.word1.data != "") if form.amount1.data == None else form.amount1.data)
+		amount2 = (int(form.word2.data != "") if form.amount2.data == None else form.amount2.data)
+		amount3 = (int(form.word3.data != "") if form.amount3.data == None else form.amount3.data)
 		amounts = [amount1,amount2,amount3]
 
 		#retrieve word data from form. ""->" " if (optionally) empty
@@ -59,8 +59,11 @@ def recipe():
 		word3 = (" " if form.word3.data == "" else form.word3.data.strip().lower())
 		words = [word1,word2,word3]
 
-		#flash the input
-		flash('{} {}+{} {}+{} {}'.format(amount1,word1,amount2,word2,amount3,word3),'input')
+		#format and flash the input
+		amount1 = int(amount1) if isinstance(amount1,float) and amount1.is_integer() else amount1
+		amount2 = int(amount2) if isinstance(amount2,float) and amount2.is_integer() else amount2
+		amount3 = int(amount3) if isinstance(amount3,float) and amount3.is_integer() else amount3
+		flash('{} {}{:+} {}{:+} {}'.format(amount1,word1,amount2,word2,amount3,word3),'input')
 
 		#look up synonyms from vector sum
 		result = nearest_words(amounts,words)
