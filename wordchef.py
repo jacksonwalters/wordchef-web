@@ -63,7 +63,7 @@ def recipe():
 		amount1 = int(amount1) if isinstance(amount1,float) and amount1.is_integer() else amount1
 		amount2 = int(amount2) if isinstance(amount2,float) and amount2.is_integer() else amount2
 		amount3 = int(amount3) if isinstance(amount3,float) and amount3.is_integer() else amount3
-		flash('{} {}{:+} {}{:+} {}'.format(amount1,word1,amount2,word2,amount3,word3),'input')
+		flash('{} {}{:+} {}{:+} {} ~'.format(amount1,word1,amount2,word2,amount3,word3),'input')
 
 		#look up synonyms from vector sum
 		result = nearest_words(amounts,words)
