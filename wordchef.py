@@ -22,8 +22,7 @@ def nearest_words(amounts,words):
 	vecs=[]
 	for word in words:
 		try:
-			vec = to_vec[word]
-			vecs.append(vec)
+			vecs.append(to_vec[word])
 		#if word is not in vocab, do not include
 		except KeyError:
 			vecs.append(numpy.zeros(300))
@@ -31,12 +30,15 @@ def nearest_words(amounts,words):
 	#compute linear combination of user wordvectors
 	assert len(vecs) == len(amounts)
 	n = len(vecs)
-	lin_comb = numpy.zeros(300)
+	mix_vec = numpy.zeros(300)
 	for i in range(n):
-		lin_comb += amounts[i]*vecs[i]
+		mix_vec += amounts[i]*vecs[i]
+	#optional: normalize so sum of amounts is 1
+	if sum(amounts)!=0:
+		mix_vec = mix_vec/sum(amounts)
 
 	#perform nearest neighbor search of wordvector vocabulary
-	dist, ind = tree.query([lin_comb],10)
+	dist, ind = tree.query([mix_vec],10)
 
 	#lookup nearest words using indices from tree
 	near_words = [vocab[i] for i in ind[0]]
