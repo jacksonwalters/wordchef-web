@@ -3,13 +3,34 @@
 {% block content %}
 <!-- Wrapper -->
 <div id="wrapper">
-<!-- Header -->
+  <!-- Header -->
+    <header id="header">
+
+      <div class="inner">
+        <!-- Nav -->
+          <nav>
+            <ul>
+              <li><a href="#menu">Menu</a></li>
+            </ul>
+          </nav>
+
+      </div>
+    </header>
+
+  <!-- Menu -->
+    <nav id="menu">
+      <h2>Menu</h2>
+      <ul>
+        <li><a href="https://jacksonwalters.com">Home</a></li>
+        <li><a href="https://jacksonwalters.com#main">Projects</a></li>
+        <li><a href="#footer">Contact</a></li>
+      </ul>
+    </nav>
+
 <div id="main">
   <div class="inner">
     <h1>word+chef</h1>
-    <section>
     <p>Choose any amounts of any words and mix them together to get a new one!</p>
-    </section>
     <!-- collect user input in form-->
     <section>
     <form action="" method="post" novalidate>
@@ -83,5 +104,25 @@
 
    </div>
   </div>
+  <!-- Footer -->
+    <footer id="footer">
+      <div class="inner">
+        <section>
+          <h2>Contact</h2>
+            <p>jacksonwalters@gmail.com</p>
+        </section>
+        <section>
+          <h2>Links</h2>
+          <ul class="icons">
+            <li><a href="https://www.linkedin.com/in/jacksongwalters/" class="icon brands style2 fa-linkedin"><span class="label">Twitter</span></a></li>
+            <li><a href="https://github.com/jacksonwalters" class="icon brands style2 fa-github"><span class="label">GitHub</span></a></li>
+            <li><a href="https://twitter.com/jacksonwalters" class="icon brands style2 fa-twitter"><span class="label">Twitter</span></a></li>
+          </ul>
+        </section>
+        <ul class="copyright">
+          <li>&copy; 2021 Jackson Walters. All rights reserved.</li>
+        </ul>
+      </div>
+    </footer>
 </div>
 {% endblock %}
