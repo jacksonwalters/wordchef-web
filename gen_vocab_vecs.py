@@ -18,7 +18,7 @@ nlp.vocab.lookups.add_table("lexeme_prob", lookups.get_table("lexeme_prob"))
 print("Total number of words in spaCy vocab=",len(nlp.vocab.strings))
 print("Getting words...")
 words = [word for word in nlp.vocab.strings if nlp.vocab.has_vector(word) and word.islower() and nlp.vocab[word].prob >= MIN_PROB]
-print("Retrieved ",len(words),"lowercase words with vectors and prob >=.",MIN_PROB)
+print("Retrieved ",len(words),"lowercase words with vectors and prob >=",MIN_PROB)
 
 #get wordvectors for all words as numpy array
 print("Total number of wordvectors=",len(nlp.vocab.vectors))
