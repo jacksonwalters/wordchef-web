@@ -3,7 +3,7 @@ import sklearn.neighbors as nbs
 from spacy.lookups import load_lookups
 
 
-MIN_PROB = -18
+MIN_PROB = -16
 
 #load NLP tool spaCy
 print("Loading spaCy...")
