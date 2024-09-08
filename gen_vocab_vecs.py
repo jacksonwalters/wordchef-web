@@ -34,18 +34,18 @@ print("Spot check passed.")
 
 #pickle the entire vocab
 #pickle.HIGHEST_PROTOCOL depends on Python version
-with open('vocab.pkl', 'wb') as f:
+with open('./vocab/vocab.pkl', 'wb') as f:
 		pickle.dump(words,f,protocol=4)
 print("Dumped vocab words to pickle file vocab.pkl")
 
 #place all wordvectors in balltree, and pickle entire tree
 tree = nbs.BallTree(wordvecs)
-with open('balltree.pkl', 'wb') as f:
+with open('./vocab/balltree.pkl', 'wb') as f:
 		pickle.dump(tree,f,protocol=4)
 print("Dumped wordvector BallTree to pickle file balltree.pkl")
 
 #create word:vector dict and pickle it
 dict = dict(zip(words,wordvecs))
-with open('dict.pkl', 'wb') as f:
+with open('./vocab/dict.pkl', 'wb') as f:
 		pickle.dump(dict,f,protocol=4)
 print("Dumped word2vec dictionary in dict.pkl")
