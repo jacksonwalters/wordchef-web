@@ -11,14 +11,15 @@ mydb = mysql.connector.connect(
 )
 mycursor = mydb.cursor()
 
-with open("dict.pkl", 'rb') as wordvector_dict:
+with open("vocab/dict.pkl", 'rb') as wordvector_dict:
     wordvectors = pickle.load(wordvector_dict)
 
 for word, embedding in wordvectors.items():
-    word_string = word.replace("'","''")
+    word_string  = word.replace("'","''")
+    print(word_string)
     embedding_string = str(list(embedding)).replace('[','').replace(']','')
-    sql_insert_string = "INSERT INTO wordchef.wordvectors (`word`,`embedding`) VALUES ({word},{embedding});".format(word=word_string,embedding=embedding_string)
-    mycursor.execute()
+    sql_insert_string = "INSERT INTO wordchef.wordvectors (`word`,`embedding`) VALUES ('{word}','{embedding}');".format(word=word_string,embedding=embedding_string)
+    mycursor.execute(sql_insert_string)
 
 mydb.commit()
 mycursor.close()
