@@ -5,6 +5,16 @@
     $conn = pg_connect("host=localhost port=5432 dbname=jackson user=jackson password=your-password-here");
 ?>
 
+<html>
+<head>
+<title>wordchef</title>
+</head>
+<body>
+<h1>wordchef</h1>
+<p>This is a webapp which uses PHP + pgSQL w/ pgvector to lookup word embeddings, find their sum, and do a fast semantic similarity search to find the nearest five words.</p>
+</body>
+</html>
+
 <?php
 // validate user input from forms
 function validate_string($user_input,$max_len){
@@ -53,6 +63,7 @@ function scale_array($scalar,$arr){
 ?>
 
 <?php
+    $valid_input_1 = false;
     if(isset($_POST['word_1'])){
         $word_1 = $_POST['word_1'];
         $valid_input_1 = validate_string($word_1,14);
@@ -67,6 +78,7 @@ function scale_array($scalar,$arr){
             }
         }
     }
+    $valid_input_2 = false;
     if(isset($_POST['word_2'])){
         $word_2 = $_POST['word_2'];
         $valid_input_2 = validate_string($word_2,14);
@@ -82,40 +94,32 @@ function scale_array($scalar,$arr){
         }
     }
     if($valid_input_1 && $valid_input_2){
-        echo $word_1 . "+" . $word_2;
         $sum_array = add_arrays($embedding_array_1,$embedding_array_2);
-        $sum_array_string = '[' . implode(',', $sum_array) . ']';
+        $average_array = scale_array(.5,$sum_array);
+        $average_array_string = '[' . implode(',', $average_array) . ']';
+        echo '(' . $word_1 . "+" . $word_2 . ")/2 -->   " . $average_array_string;
+
+        // Performing SQL query
+        $query = "SELECT * FROM wordembeddings ORDER BY embedding <-> '$average_array_string' LIMIT 5;";
+        $result = pg_query($conn,$query) or die('Query failed: ' . pg_last_error());
+
+        // Printing results in HTML
+        echo "<table>\n";
+        while ($row = pg_fetch_array($result, null, PGSQL_ASSOC)) {
+            echo "\t<tr>\n";
+            foreach ($row as $col_value) {
+                echo "\t\t<td>$col_value</td>\n";
+            }
+            echo "\t</tr>\n";
+        }
+        echo "</table>\n";
+
+        // Free resultset
+        pg_free_result($result);
     }
+
+    // Closing connection
+    pg_close($conn);
     
 ?>
 
-<?php
-// Performing SQL query
-$query = "SELECT * FROM wordembeddings ORDER BY embedding <-> '$sum_array_string' LIMIT 5;";
-$result = pg_query($conn,$query) or die('Query failed: ' . pg_last_error());
-
-// Printing results in HTML
-echo "<table>\n";
-while ($row = pg_fetch_array($result, null, PGSQL_ASSOC)) {
-    echo "\t<tr>\n";
-    foreach ($row as $col_value) {
-        echo "\t\t<td>$col_value</td>\n";
-    }
-    echo "\t</tr>\n";
-}
-echo "</table>\n";
-
-// Free resultset
-pg_free_result($result);
-
-// Closing connection
-pg_close($conn);
-?>
-
-<html>
-<head>
-</head>
-<body>
-<h1>Hello!</h1>
-</body>
-</html>
