@@ -1,36 +1,68 @@
 #perform doc2vec embeddings on comments with gensim
+import numpy as np
+import pandas as pd
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 from nltk.tokenize import word_tokenize
+from sklearn.cluster import KMeans
 
-print("Loading model...")
+print("Loading data...<br>")
 
-model = Doc2Vec.load("d2v.model")
-print("Model loaded, proceeding to inference...")
+#read in the data
+n_samples = 1000
+data = pd.read_csv('uploads/comments.csv',header=None,names=['comment'])
+comments = data['comment'][:n_samples]
 
-# Test data
+keywords = list(pd.read_csv("uploads/keywords.csv"))
+
+print("Keywords:", keywords[:10],"<br>")
+
 try:
-    test_data = word_tokenize("hello how are you".lower())
-    print(f"Tokenized test data: {test_data}")
+    model = Doc2Vec.load("d2v.model")
+    print("Model loaded successfully.<br>")
+except FileNotFoundError:
+    print("Model file not found. Please check the file path.")
 except Exception as e:
-    print(f"Error during tokenization: {e}")
+    print(f"An error occurred: {e}")
 
-# Load the model and infer vector
-try:
-    v1 = model.infer_vector(test_data)
-    print(f"Inferred docvector for 'hello how are you': {v1}")
-except Exception as e:
-    print(f"Error during vector inference: {e}")
+comment_vectors = {doc:model.infer_vector(word_tokenize(doc.lower())) for doc in comments}
+comment_vectors_list = list(comment_vectors.values())
 
-# Get most similar docvectors
-try:
-    most_similar = model.dv.most_similar('1')
-    print(f"Most similar docvectors to '1': {most_similar}")
-except Exception as e:
-    print(f"Error fetching most similar docvectors: {e}")
+keyword_vectors = {doc:model.infer_vector(word_tokenize(doc.lower())) for doc in keywords}
+keyword_vectors_list = list(keyword_vectors.values())
 
-# Fetch specific docvector
+#determine the number of clusters with elbow method, ideally automatically
+num_clusters = 5
+
 try:
-    docvector = model.dv['1']
-    print(f"Docvector of '1': {docvector}")
+    # Attempt to create and fit the KMeans model
+    kmeans = KMeans(n_clusters=num_clusters)
+    kmeans.fit(comment_vectors_list)
+    print("KMeans model fitted successfully.<br>")
+except ValueError as ve:
+    print(f"ValueError: {ve}")  # Handle issues with data shape or invalid parameters
+except NotFittedError:
+    print("Error: The model was not fitted.<br>")
 except Exception as e:
-    print(f"Error fetching docvector for '1': {e}")
+    print(f"An unexpected error occurred: {e}<br>")
+
+#define cosine similarity
+from numpy.linalg import norm
+def cosine_similarity(v,w):
+    return np.dot(v,w)/(norm(v)*norm(w))
+
+#find closest bigram to centroid
+centroids  = kmeans.cluster_centers_
+nearest_bigram_to_centroid = []
+for centroid in centroids:
+    min_dist = 2**32
+    nearest_bigram = ""
+    for bigram, embedding in bigram_vecs.items():
+        #dist = cosine_similarity(centroid, embedding)
+        dist = np.linalg.norm(centroid - embedding)
+        if dist < min_dist:
+            min_dist = dist
+            nearest_bigram = bigram
+    nearest_bigram_to_centroid.append((nearest_bigram,min_dist))
+
+print("Nearest keyword to centroid:")
+print(nearest_bigram_to_centroid)
