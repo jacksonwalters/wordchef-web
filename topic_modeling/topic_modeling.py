@@ -14,7 +14,7 @@ comments = data['comment'][:n_samples]
 
 keywords = list(pd.read_csv("uploads/keywords.csv"))
 
-print("Keywords:", keywords[:10],"<br>")
+print("First 10 Keywords:", keywords[:10],"<br>")
 
 try:
     model = Doc2Vec.load("d2v.model")
@@ -52,17 +52,36 @@ def cosine_similarity(v,w):
 
 #find closest bigram to centroid
 centroids  = kmeans.cluster_centers_
-nearest_bigram_to_centroid = []
+nearest_keyword_to_centroid = []
 for centroid in centroids:
     min_dist = 2**32
-    nearest_bigram = ""
-    for bigram, embedding in keyword_vectors.items():
+    nearest_keyword = ""
+    for keyword, embedding in keyword_vectors.items():
         #dist = cosine_similarity(centroid, embedding)
         dist = np.linalg.norm(centroid - embedding)
         if dist < min_dist:
             min_dist = dist
-            nearest_bigram = bigram
-    nearest_bigram_to_centroid.append((nearest_bigram,min_dist))
+            nearest_keyword = keyword
+    nearest_keyword_to_centroid.append((nearest_keyword,min_dist))
 
 print("Nearest keyword to centroid:")
-print(nearest_bigram_to_centroid)
+print(nearest_keyword_to_centroid)
+
+#find the keyword which is closest to each comment in the embedding
+nearest_keyword_to_comment = []
+for comment in comments[:10]:
+    min_dist = 2**32
+    nearest_keyword = ""
+    for keyword, embedding in keyword_vectors.items():
+        #dist = cosine_similarity(centroid, embedding)
+        dist = np.linalg.norm(centroid - embedding)
+        if dist < min_dist:
+            min_dist = dist
+            nearest_keyword = keyword
+    nearest_keyword_to_comment.append((comment,nearest_keyword,min_dist))
+
+print("Nearest keyword to comment")
+for nearest_comment in nearest_keyword_to_comment:
+    print(nearest_comment)
+
+
