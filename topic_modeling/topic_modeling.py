@@ -44,7 +44,7 @@ except Exception as e:
     print(f"An unexpected error occurred: {e}<br>")
 
 #print first 10 keywords
-print("First 10 Keywords:", keywords[:10],"<br>")
+print("<b>First 10 Keywords:</b><br>", keywords[:10],"<br><br>")
 
 #define cosine similarity
 from numpy.linalg import norm
