@@ -37,9 +37,9 @@ try:
     # Attempt to create and fit the KMeans model
     kmeans = KMeans(n_clusters=num_clusters)
     kmeans.fit(comment_vectors_list)
-    print("KMeans model fitted successfully.<br>")
+    print("KMeans model fitted successfully.<br><br>")
 except ValueError as ve:
-    print(f"ValueError: {ve}")  # Handle issues with data shape or invalid parameters
+    print(f"ValueError: {ve}<br>")  # Handle issues with data shape or invalid parameters
 except NotFittedError:
     print("Error: The model was not fitted.<br>")
 except Exception as e:
@@ -64,7 +64,7 @@ for centroid in centroids:
             nearest_keyword = keyword
     nearest_keyword_to_centroid.append((nearest_keyword,min_dist))
 
-print("Nearest keyword to centroid:<br>")
+print("<b>Nearest keyword to centroid:</b><br>")
 for nearest_keyword in nearest_keyword_to_centroid:
     print(nearest_keyword,"<br>")
 print("<br>")
@@ -83,7 +83,7 @@ for comment in comments[:10]:
             nearest_keyword = keyword
     nearest_keyword_to_comment.append((comment,nearest_keyword,min_dist))
 
-print("Nearest keyword to comment:<br>")
+print("<b>Nearest keyword to comment:</b><br>")
 for nearest_comment in nearest_keyword_to_comment:
     print(nearest_comment,"<br>")
 
