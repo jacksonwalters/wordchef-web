@@ -14,8 +14,6 @@ comments = data['comment'][:n_samples]
 
 keywords = list(pd.read_csv("uploads/keywords.csv"))
 
-print("First 10 Keywords:", keywords[:10],"<br>")
-
 try:
     model = Doc2Vec.load("d2v.model")
     print("Model loaded successfully.<br>")
@@ -44,6 +42,9 @@ except NotFittedError:
     print("Error: The model was not fitted.<br>")
 except Exception as e:
     print(f"An unexpected error occurred: {e}<br>")
+
+#print first 10 keywords
+print("First 10 Keywords:", keywords[:10],"<br>")
 
 #define cosine similarity
 from numpy.linalg import norm
@@ -87,4 +88,35 @@ print("<b>Nearest keyword to comment:</b><br>")
 for nearest_comment in nearest_keyword_to_comment:
     print(nearest_comment,"<br>")
 
+print("<br><br>")
 
+#label the data with the appropriate label from k-means clustering
+labeled_data = list(zip(comments,kmeans.labels_))
+
+#separate documents by label. build vocabulary for each cluster
+cluster_docs = [[] for index in range(num_clusters)]
+for doc, label in labeled_data:
+    cluster_docs[label].append(doc)
+
+#Use TF-IDF on each cluster to extract top two words
+from sklearn.feature_extraction.text import TfidfVectorizer
+def top_words_in_cluster(cluster_index, num_words=10):
+    try:
+        tfidf_vectorizer = TfidfVectorizer(sublinear_tf=True, max_df=0.5, analyzer='word', stop_words='english')
+        corpus_tfidf = tfidf_vectorizer.fit_transform(cluster_docs[cluster_index])
+        tfidf_df = pd.DataFrame(corpus_tfidf.toarray(), columns=tfidf_vectorizer.get_feature_names_out())
+        tfidf_scores = tfidf_df.sum(axis=0)
+        return tfidf_scores.nlargest(n=num_words)
+    except IndexError:
+        print(f"Error: Cluster index {cluster_index} is out of range.")
+    except ValueError as ve:
+        print(f"ValueError: {ve}")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+
+
+print("<b>Top TF-IDF scores on each cluster:</b>","<br>")
+for index in range(num_clusters):
+    print(f"<i>Cluster {index}:</i><br>")
+    for word, score in top_words_in_cluster(index).items():
+        print(f"{word}: {value}","<br>")
