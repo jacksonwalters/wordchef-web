@@ -64,8 +64,10 @@ for centroid in centroids:
             nearest_keyword = keyword
     nearest_keyword_to_centroid.append((nearest_keyword,min_dist))
 
-print("Nearest keyword to centroid:")
-print(nearest_keyword_to_centroid)
+print("Nearest keyword to centroid:<br>")
+for nearest_keyword in nearest_keyword_to_centroid:
+    print(nearest_keyword,"<br>")
+print("<br>")
 
 #find the keyword which is closest to each comment in the embedding
 nearest_keyword_to_comment = []
@@ -80,8 +82,8 @@ for comment in comments[:10]:
             nearest_keyword = keyword
     nearest_keyword_to_comment.append((comment,nearest_keyword,min_dist))
 
-print("Nearest keyword to comment")
+print("Nearest keyword to comment:<br>")
 for nearest_comment in nearest_keyword_to_comment:
-    print(nearest_comment)
+    print(nearest_comment,"<br>")
 
 
