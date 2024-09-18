@@ -56,7 +56,7 @@ nearest_bigram_to_centroid = []
 for centroid in centroids:
     min_dist = 2**32
     nearest_bigram = ""
-    for bigram, embedding in bigram_vecs.items():
+    for bigram, embedding in keyword_vectors.items():
         #dist = cosine_similarity(centroid, embedding)
         dist = np.linalg.norm(centroid - embedding)
         if dist < min_dist:
