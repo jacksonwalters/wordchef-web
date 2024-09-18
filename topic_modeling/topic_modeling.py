@@ -2,9 +2,6 @@
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 from nltk.tokenize import word_tokenize
 
-import nltk
-print(nltk.data.path)
-
 print("Loading model...")
 
 model = Doc2Vec.load("d2v.model")
