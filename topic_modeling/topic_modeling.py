@@ -119,4 +119,6 @@ print("<b>Top TF-IDF scores on each cluster:</b>","<br>")
 for index in range(num_clusters):
     print(f"<i>Cluster {index}:</i><br>")
     for word, score in top_words_in_cluster(index).items():
-        print(f"{word}: {value}","<br>")
+        print(f"({word},{score:.2f})")
+    print("<br>")
+
