@@ -2,30 +2,38 @@
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 from nltk.tokenize import word_tokenize
 
-print("beginning topic modeling script...")
+import nltk
+print(nltk.data.path)
 
-import os
+print("Loading model...")
 
-model_path = "d2v.model"
-if not os.path.exists(model_path):
-    print(f"Model file not found: {model_path}")
-else:
-    print(f"Model file found: {model_path}")
+model = Doc2Vec.load("d2v.model")
+print("Model loaded, proceeding to inference...")
 
+# Test data
 try:
-    model = Doc2Vec.load("d2v.model")
+    test_data = word_tokenize("hello how are you".lower())
+    print(f"Tokenized test data: {test_data}")
 except Exception as e:
-    print(f"Error loading model: {e}")
-    exit(1)  # Exit with an error code
+    print(f"Error during tokenization: {e}")
 
-# Check after model loading
-print("Model seems to be loaded, continuing...")
+# Load the model and infer vector
+try:
+    v1 = model.infer_vector(test_data)
+    print(f"Inferred docvector for 'hello how are you': {v1}")
+except Exception as e:
+    print(f"Error during vector inference: {e}")
 
+# Get most similar docvectors
+try:
+    most_similar = model.dv.most_similar('1')
+    print(f"Most similar docvectors to '1': {most_similar}")
+except Exception as e:
+    print(f"Error fetching most similar docvectors: {e}")
 
-#to find the vector of a document which is not in training data
-test_data = word_tokenize("hello how are you".lower())
-v1 = model.infer_vector(test_data)
-
-print("inferred docvector for 'hello how are you': ", v1)
-print("most similar docvectors to '1': ",model.dv.most_similar('1'))
-print("docvector of '1': ",model.dv['1'])
+# Fetch specific docvector
+try:
+    docvector = model.dv['1']
+    print(f"Docvector of '1': {docvector}")
+except Exception as e:
+    print(f"Error fetching docvector for '1': {e}")
