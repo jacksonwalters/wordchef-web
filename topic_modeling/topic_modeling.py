@@ -65,30 +65,11 @@ for centroid in centroids:
             nearest_keyword = keyword
     nearest_keyword_to_centroid.append((nearest_keyword,min_dist))
 
-print("<b>Nearest keyword to centroid:</b><br>")
+print("<b>Nearest keyword to cluster centroid:</b><br>")
 for nearest_keyword in nearest_keyword_to_centroid:
     print(nearest_keyword,"<br>")
+
 print("<br>")
-
-#find the keyword which is closest to each comment in the embedding
-nearest_keyword_to_comment = []
-for comment in comments[:10]:
-    min_dist = 2**32
-    nearest_keyword = ""
-    comment_vec = comment_vectors[comment]
-    for keyword, embedding in keyword_vectors.items():
-        #dist = cosine_similarity(comment_vec, embedding)
-        dist = np.linalg.norm(comment_vec - embedding)
-        if dist < min_dist:
-            min_dist = dist
-            nearest_keyword = keyword
-    nearest_keyword_to_comment.append((comment,nearest_keyword,min_dist))
-
-print("<b>Nearest keyword to comment:</b><br>")
-for nearest_comment in nearest_keyword_to_comment:
-    print(nearest_comment,"<br>")
-
-print("<br><br>")
 
 #label the data with the appropriate label from k-means clustering
 labeled_data = list(zip(comments,kmeans.labels_))
@@ -122,3 +103,24 @@ for index in range(num_clusters):
         print(f"({word},{score:.2f})")
     print("<br>")
 
+print("<br>")
+
+#find the keyword which is closest to each comment in the embedding
+nearest_keyword_to_comment = []
+for comment in comments[:10]:
+    min_dist = 2**32
+    nearest_keyword = ""
+    comment_vec = comment_vectors[comment]
+    for keyword, embedding in keyword_vectors.items():
+        #dist = cosine_similarity(comment_vec, embedding)
+        dist = np.linalg.norm(comment_vec - embedding)
+        if dist < min_dist:
+            min_dist = dist
+            nearest_keyword = keyword
+    nearest_keyword_to_comment.append((comment,nearest_keyword,min_dist))
+
+print("<b>Nearest keyword to comment:</b><br>")
+for nearest_comment in nearest_keyword_to_comment:
+    print(nearest_comment,"<br>")
+
+print("<br><br>")
