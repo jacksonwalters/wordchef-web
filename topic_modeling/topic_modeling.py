@@ -74,9 +74,9 @@ nearest_keyword_to_comment = []
 for comment in comments[:10]:
     min_dist = 2**32
     nearest_keyword = ""
-    comment_vec = keyword_vectors['comment']
+    comment_vec = keyword_vectors[comment]
     for keyword, embedding in keyword_vectors.items():
-        #dist = cosine_similarity(centroid, embedding)
+        #dist = cosine_similarity(comment_vec, embedding)
         dist = np.linalg.norm(comment_vec - embedding)
         if dist < min_dist:
             min_dist = dist
