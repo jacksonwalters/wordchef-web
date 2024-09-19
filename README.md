@@ -9,7 +9,7 @@ PHP + pgSQL + pgvector webapp to take linear combinations of words
 
 **TOPIC MODELING**
 
-Available at https://wordchef.app/topic_modeling. 
+Available at https://wordchef.app/topic_modeling
 
 Built from https://github.com/jacksonwalters/nlp/topic_modeling
 
