@@ -1,4 +1,4 @@
-**wordchef**
+**WORDCHEF**
 
 PHP + pgSQL + pgvector webapp to take linear combinations of words
 
