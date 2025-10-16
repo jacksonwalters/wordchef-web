@@ -1,6 +1,6 @@
-**WORDCHEF**
+# wordchef
 
-PHP + pgSQL + pgvector webapp to take linear combinations of words
+PHP + pgSQL + pgvector webapp to take linear combinations of words.
 
 - Uses spaCy to generate full vocab and corresponding wordvectors
 - Wordvectors are stored in a PostgreSQL database with pgvector which allows fast semantic search
