@@ -94,6 +94,37 @@ $average_array_string = '[' . implode(',', $average_array) . ']';
 </form>
 
 <?php
+
+// Generate vector image using external Python script
+function generate_vector_image($embedding_array, $word) {
+    $embedding_csv = implode(',', $embedding_array);
+    $python_venv = '/home/jackson/wordchef/wordchefenv/bin/python3';
+    $img_gen_script = '/var/www/wordchef.app/html/scripts/vector_image.py';
+
+    $cmd = escapeshellcmd($python_venv . ' ' . $img_gen_script) . ' '
+         . escapeshellarg($embedding_csv) . ' '
+         . escapeshellarg($word)
+         . ' 2>&1'; // redirect stderr -> stdout for debugging
+
+    $output = shell_exec($cmd);
+    return is_string($output) ? trim($output) : ''; // make sure we got something and trim
+}
+
+$img_path = generate_vector_image($embedding_array_1, $word_1);
+
+// debug: show python output if something went wrong
+if ($img_path === '' || !str_starts_with($img_path, '/var/www/wordchef.app/html/')) {
+    echo "<pre>Python output:\n" . htmlspecialchars($output) . "</pre>";
+    echo "<p>(no image generated)</p>";
+} else {
+    // convert filesystem path to web URL
+    $img_url = str_replace('/var/www/wordchef.app/html/', '/', $img_path);
+    // show the image; use pixelated rendering for crisp blocks
+    echo "<br>\"$word_1\" (word embedding vector image):<br>";
+    echo "<img src='" . htmlspecialchars($img_url, ENT_QUOTES) . "' alt='vector image' "
+       . "style='width:100px; image-rendering:pixelated;'>" . "<br>";
+}
+
 // Determine display text
 if ($word_1 === '' && $word_2 === '') {
     echo "Both empty. Nearest to zero:<br>";
