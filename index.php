@@ -150,31 +150,61 @@ if (!empty($images)) {
     echo "</tr></table>";
 }
 
-// Determine display text
-if ($word_1 === '' && $word_2 === '') {
-    echo "Both empty. Nearest to zero:<br>";
-} elseif ($word_1 === '') {
-    echo "$word_2 is similar to:<br>";
-} elseif ($word_2 === '') {
-    echo "$word_1 is similar to:<br>";
-} else {
-    echo "($word_1 + $word_2)/2 --> $average_array_string<br>";
-}
-
 // Perform nearest-neighbor query safely
 $query = "SELECT * FROM wordembeddings ORDER BY embedding <-> $1 LIMIT 5";
 $result = pg_query_params($conn, $query, [$average_array_string]);
 
 // Display results in HTML table
 if ($result) {
-    echo "<table border='1'>\n";
-    while ($row = pg_fetch_assoc($result)) {
-        echo "\t<tr>\n";
-        foreach ($row as $col_value) {
-            echo "\t\t<td>$col_value</td>\n";
-        }
-        echo "\t</tr>\n";
+
+    // Determine display text
+    if ($word_1 === '' && $word_2 === '') {
+        echo "<h2>Both empty. Similar to zero:</h2><br>";
+    } elseif ($word_1 === '') {
+        echo "<h2>$word_2 is similar to:</h2><br>";
+    } elseif ($word_2 === '') {
+        echo "<h2>$word_1 is similar to:</h2><br>";
+    } else {
+        echo "<h2>avg($word_1, $word_2) is similar to:</h2><br>";
     }
+
+    echo "<table border='1' cellspacing='0' cellpadding='6' style='border-collapse:collapse; text-align:center;'>\n";
+
+    // Collect neighbors
+    $neighbors = [];
+    while ($row = pg_fetch_assoc($result)) {
+        $neighbor_word = htmlspecialchars($row['word']);
+        $embedding_str = $row['embedding'];
+
+        $embedding_array = array_map('floatval', preg_split('/[,\s]+/', trim($embedding_str, '{}()')));
+        $img_path = generate_vector_image($embedding_array, $neighbor_word);
+        $img_url = str_replace('/var/www/wordchef.app/html/', '/', $img_path);
+
+        $neighbors[] = [
+            'word' => $neighbor_word,
+            'img_url' => ($img_url && file_exists($img_path)) ? $img_url : null
+        ];
+    }
+
+    // First row: words
+    echo "<tr>";
+    foreach ($neighbors as $n) {
+        echo "<th style='font-weight:bold; padding:8px;'>" . $n['word'] . "</th>";
+    }
+    echo "</tr>\n";
+
+    // Second row: images
+    echo "<tr>";
+    foreach ($neighbors as $n) {
+        if ($n['img_url']) {
+            echo "<td><img src='" . htmlspecialchars($n['img_url'], ENT_QUOTES) . "' alt='vector image' "
+                . "style='width:100px; image-rendering:pixelated;'></td>";
+        } else {
+            echo "<td>(no image)</td>";
+        }
+    }
+    echo "</tr>\n";
+
     echo "</table>\n";
     pg_free_result($result);
 }
