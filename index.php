@@ -104,42 +104,50 @@ function generate_vector_image($embedding_array, $word) {
     $cmd = escapeshellcmd($python_venv . ' ' . $img_gen_script) . ' '
          . escapeshellarg($embedding_csv) . ' '
          . escapeshellarg($word)
-         . ' 2>&1'; // redirect stderr -> stdout for debugging
+         . ' 2>&1'; // redirect stderr -> stdout
 
     $output = shell_exec($cmd);
-    return is_string($output) ? trim($output) : ''; // make sure we got something and trim
+    return is_string($output) ? trim($output) : '';
 }
 
-if ($word_1 != '') {
+// --- Collect available images ---
+$images = [];
+
+if ($word_1 !== '') {
     $img_path_1 = generate_vector_image($embedding_array_1, $word_1);
-    // debug: show python output if something went wrong
-    if ($img_path_1 === '' || !str_starts_with($img_path_1, '/var/www/wordchef.app/html/')) {
-        echo "<pre>Python output:\n" . htmlspecialchars($output) . "</pre>";
-        echo "<p>(no image generated)</p>";
-    } else {
-        // convert filesystem path to web URL
-        $img_url = str_replace('/var/www/wordchef.app/html/', '/', $img_path_1);
-        // show the image; use pixelated rendering for crisp blocks
-        echo "<br>\"$word_1\" (word embedding vector image):<br>";
-        echo "<img src='" . htmlspecialchars($img_url, ENT_QUOTES) . "' alt='vector image' "
-        . "style='width:100px; image-rendering:pixelated;'>" . "<br>";
+    if (str_starts_with($img_path_1, '/var/www/wordchef.app/html/')) {
+        $images[$word_1] = str_replace('/var/www/wordchef.app/html/', '/', $img_path_1);
     }
 }
 
-if ($word_2 != '') {
+if ($word_2 !== '') {
     $img_path_2 = generate_vector_image($embedding_array_2, $word_2);
-    // debug: show python output if something went wrong
-    if ($img_path_1 === '' || !str_starts_with($img_path_2, '/var/www/wordchef.app/html/')) {
-        echo "<pre>Python output:\n" . htmlspecialchars($output) . "</pre>";
-        echo "<p>(no image generated)</p>";
-    } else {
-        // convert filesystem path to web URL
-        $img_url = str_replace('/var/www/wordchef.app/html/', '/', $img_path_2);
-        // show the image; use pixelated rendering for crisp blocks
-        echo "<br>\"$word_2\" (word embedding vector image):<br>";
-        echo "<img src='" . htmlspecialchars($img_url, ENT_QUOTES) . "' alt='vector image' "
-        . "style='width:100px; image-rendering:pixelated;'>" . "<br>";
+    if (str_starts_with($img_path_2, '/var/www/wordchef.app/html/')) {
+        $images[$word_2] = str_replace('/var/www/wordchef.app/html/', '/', $img_path_2);
     }
+}
+
+if ($word_1 !== '' && $word_2 !== '') {
+    $avg_label = "($word_1 + $word_2) / 2";
+    $safe_label = "($word_1 + $word_2)_avg"; // no slash, for file safety
+    $img_path_avg = generate_vector_image($average_array, $safe_label);
+    if (str_starts_with($img_path_avg, '/var/www/wordchef.app/html/')) {
+        $images[$avg_label] = str_replace('/var/www/wordchef.app/html/', '/', $img_path_avg);
+    }
+}
+
+// --- Display images in a single row ---
+if (!empty($images)) {
+    echo "<table style='border-collapse:collapse; margin-top:10px; text-align:center;'><tr>";
+    foreach ($images as $label => $url) {
+        echo "<td style='padding:10px;'>";
+        echo "<div style='font-family:monospace; font-size:0.9em; margin-bottom:4px;'>"
+             . htmlspecialchars($label) . "</div>";
+        echo "<img src='" . htmlspecialchars($url, ENT_QUOTES) . "' "
+             . "alt='vector image' style='width:120px; image-rendering:pixelated; border:1px solid #ccc;'>";
+        echo "</td>";
+    }
+    echo "</tr></table>";
 }
 
 // Determine display text
