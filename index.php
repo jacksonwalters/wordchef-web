@@ -2,7 +2,21 @@
     error_reporting(E_ALL);
     ini_set('display_errors', '1');
     //connect to a database named "jackson" on the host "localhost" with a username and password
-    $conn = pg_connect("host=localhost port=5432 dbname=jackson user=jackson password=your-password-here");
+
+    $config = include('/var/www/wordchef.app/html/db_config.php');
+    $conn_string = sprintf(
+        "host=%s port=%d dbname=%s user=%s password=%s",
+        $config['host'],
+        $config['port'],
+        $config['dbname'],
+        $config['user'],
+        $config['password']
+    );
+
+$conn = pg_connect($conn_string);
+if (!$conn) {
+    die("Connection failed: " . pg_last_error());
+}
 ?>
 
 <html>
@@ -18,8 +32,9 @@
 <?php
 // validate user input from forms
 function validate_string($user_input,$max_len){
-    if (empty($user_input)) {
-        return false;
+    // Allow empty string
+    if ($user_input === '') {
+        return true;
     }
     // To check that username only contains alphabets, numbers, and underscores 
     elseif (!preg_match("/^[a-zA-Z0-9_]*$/", $user_input)) {
@@ -63,6 +78,10 @@ function scale_array($scalar,$arr){
 ?>
 
 <?php
+    // assuming 300-dimensional embeddings
+    $embedding_array_1 = array_fill(0, 300, 0);
+    $embedding_array_2 = array_fill(0, 300, 0);
+
     $valid_input_1 = false;
     if(isset($_POST['word_1'])){
         $word_1 = $_POST['word_1'];
@@ -70,14 +89,14 @@ function scale_array($scalar,$arr){
         if($valid_input_1){
             $word_1_query = "SELECT * FROM wordembeddings WHERE word='$word_1'";
             $result = pg_query($conn,$word_1_query) or die('Query failed: ' . pg_last_error());
-            //fetch the associative array of results. keys should be ['word','embedding']
-            while ($row = pg_fetch_array($result, null, PGSQL_ASSOC)) {
-                $embedding_string_1 = str_replace(array( '[', ']' ), '', $row['embedding']);
+            if($row = pg_fetch_array($result, null, PGSQL_ASSOC)){
+                $embedding_string_1 = str_replace(array('[', ']'), '', $row['embedding']);
                 $embedding_array_1 = explode(',', $embedding_string_1);
-                echo "<br>";
             }
+            // if no row found, embedding_array_1 stays as zeros
         }
     }
+
     $valid_input_2 = false;
     if(isset($_POST['word_2'])){
         $word_2 = $_POST['word_2'];
@@ -85,19 +104,27 @@ function scale_array($scalar,$arr){
         if($valid_input_2){
             $word_2_query = "SELECT * FROM wordembeddings WHERE word='$word_2'";
             $result = pg_query($conn,$word_2_query) or die('Query failed: ' . pg_last_error());
-            //fetch the associative array of results. keys should be ['word','embedding']
-            while ($row = pg_fetch_array($result, null, PGSQL_ASSOC)) {
-                $embedding_string_2 = str_replace(array( '[', ']' ), '', $row['embedding']);
+            if($row = pg_fetch_array($result, null, PGSQL_ASSOC)){
+                $embedding_string_2 = str_replace(array('[', ']'), '', $row['embedding']);
                 $embedding_array_2 = explode(',', $embedding_string_2);
-                echo "<br>";
             }
+            // if no row found, embedding_array_2 stays as zeros
         }
     }
+
     if($valid_input_1 && $valid_input_2){
         $sum_array = add_arrays($embedding_array_1,$embedding_array_2);
         $average_array = scale_array(.5,$sum_array);
         $average_array_string = '[' . implode(',', $average_array) . ']';
-        echo '(' . $word_1 . "+" . $word_2 . ")/2 -->   " . $average_array_string;
+        if ($word_1 == '' && $word_2 == '') {
+            echo "Both empty. Nearest to zero:<br>";
+        } elseif ($word_1 == '') {
+            echo "$word_2 is similar to:<br>";
+        } elseif ($word_2 == '') {
+            echo "$word_1 is similar to:<br>";
+        } else {
+            echo '(' . $word_1 . " + " . $word_2 . ")/2 --> " . $average_array_string;
+        }
 
         // Performing SQL query
         $query = "SELECT * FROM wordembeddings ORDER BY embedding <-> '$average_array_string' LIMIT 5;";
