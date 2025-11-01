@@ -15,33 +15,42 @@ if (count($words) === 0) {
     json_response(['error' => 'No valid words provided'], 400);
 }
 
-// Fetch embeddings for each
-$embeddings = [];
+// Fetch embeddings for each input word
+$input_embeddings = [];
 foreach ($words as $w) {
-    $embeddings[] = fetch_embedding($conn, $w);
+    $embedding = fetch_embedding($conn, $w);
+    $input_embeddings[] = $embedding;
 }
 
-// Compute average
-$average = average_embeddings($embeddings);
+// Compute average embedding vector
+$average = average_embeddings($input_embeddings);
 $average_str = '[' . implode(',', $average) . ']';
 
-// Query nearest neighbors
-$query = "SELECT word, embedding <-> $1 AS distance FROM wordembeddings ORDER BY embedding <-> $1 LIMIT 5";
+// Query nearest neighbors (words + distances + embeddings)
+$query = "SELECT word, embedding, embedding <-> $1 AS distance FROM wordembeddings ORDER BY embedding <-> $1 LIMIT 5";
 $result = pg_query_params($conn, $query, [$average_str]);
 
 $neighbors = [];
 while ($row = pg_fetch_assoc($result)) {
+    // Parse embedding string to float array (assuming pgvector stores as {v1,v2,...})
+    $embedding_str = str_replace(['{', '}'], '', $row['embedding']);
+    $embedding_arr = array_map('floatval', explode(',', $embedding_str));
+
     $neighbors[] = [
         'word' => $row['word'],
-        'distance' => (float)$row['distance']
+        'distance' => (float)$row['distance'],
+        'embedding' => $embedding_arr
     ];
 }
 pg_free_result($result);
 pg_close($conn);
 
-// Return JSON response
+// Return JSON including input words, their embeddings, average embedding, and neighbors with embeddings
 json_response([
-    'input' => $words,
+    'input' => [
+        'words' => $words,
+        'embeddings' => $input_embeddings,
+        'average_embedding' => $average
+    ],
     'nearest' => $neighbors
 ]);
-?>

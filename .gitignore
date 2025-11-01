@@ -2,4 +2,4 @@
 balltree.pkl
 dict.pkl
 vocab.pkl
-db_config.php
+include/db_config.php
