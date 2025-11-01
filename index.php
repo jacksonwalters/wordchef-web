@@ -3,7 +3,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', '1');
 
 // Load database credentials from external config
-$config = include('/var/www/wordchef.app/html/db_config.php');
+$config = include(__DIR__ . '/include/db_config.php');
 $conn_string = sprintf(
     "host=%s port=%d dbname=%s user=%s password=%s",
     $config['host'],
@@ -29,7 +29,9 @@ function validate_string($user_input, $max_len) {
 // Vector utilities
 function add_arrays($arr1, $arr2) {
     $n = count($arr1);
-    assert($n == count($arr2), "Arrays must be same length");
+    if ($n !== count($arr2)) {
+        throw new Exception("Arrays must be the same length");
+    }
     $sum = [];
     for ($i = 0; $i < $n; $i++) {
         $sum[$i] = $arr1[$i] + $arr2[$i];
@@ -45,17 +47,7 @@ function scale_array($scalar, $arr) {
     return $scaled;
 }
 
-// Initialize 300-dimensional zero vectors
-$embedding_array_1 = array_fill(0, 300, 0);
-$embedding_array_2 = array_fill(0, 300, 0);
-
-$word_1 = $_POST['word_1'] ?? '';
-$word_2 = $_POST['word_2'] ?? '';
-
-$valid_input_1 = validate_string($word_1, 14);
-$valid_input_2 = validate_string($word_2, 14);
-
-// Function to fetch embedding safely with prepared statement
+// Fetch embedding safely with prepared statement
 function fetch_embedding($conn, $word) {
     if ($word === '') return array_fill(0, 300, 0); // zero vector for empty input
 
@@ -68,22 +60,65 @@ function fetch_embedding($conn, $word) {
     return array_fill(0, 300, 0); // zero vector if word not found
 }
 
-// Fetch embeddings
+// Generate vector image base64 string from embedding via Python script
+function generate_vector_image($embedding_array, $word) {
+    $embedding_csv = implode(',', $embedding_array);
+    $python_venv = '/home/jackson/wordchef/wordchefenv/bin/python3';
+    $img_gen_script = '/var/www/wordchef.app/html/scripts/generate_image.py';
+
+    $cmd = escapeshellcmd($python_venv . ' ' . $img_gen_script) . ' '
+         . escapeshellarg($embedding_csv) . ' '
+         . escapeshellarg($word)
+         . ' 2>&1';
+
+    $output = shell_exec($cmd);
+    return is_string($output) ? trim($output) : '';
+}
+
+// Initialize zero vectors
+$embedding_array_1 = array_fill(0, 300, 0);
+$embedding_array_2 = array_fill(0, 300, 0);
+
+$word_1 = $_POST['word_1'] ?? '';
+$word_2 = $_POST['word_2'] ?? '';
+
+$valid_input_1 = validate_string($word_1, 14);
+$valid_input_2 = validate_string($word_2, 14);
+
+if (!$valid_input_1) {
+    die("Invalid input for word 1");
+}
+if (!$valid_input_2) {
+    die("Invalid input for word 2");
+}
+
+// Fetch embeddings for valid inputs
 $embedding_array_1 = $valid_input_1 ? fetch_embedding($conn, $word_1) : $embedding_array_1;
 $embedding_array_2 = $valid_input_2 ? fetch_embedding($conn, $word_2) : $embedding_array_2;
 
-// Compute average vector (sum and scale)
+// Compute average vector
 $sum_array = add_arrays($embedding_array_1, $embedding_array_2);
 $average_array = scale_array(0.5, $sum_array);
 $average_array_string = '[' . implode(',', $average_array) . ']';
 
 ?>
 
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
 <title>wordchef</title>
+<style>
+    body { font-family: Arial, sans-serif; }
+    table { border-collapse: collapse; margin-top: 10px; text-align: center; }
+    td, th { padding: 8px; border: 1px solid #ccc; }
+    .vector-label { font-family: monospace; font-size: 0.9em; margin-bottom: 4px; }
+    img.vector-image { width: 120px; image-rendering: pixelated; border: 1px solid #ccc; }
+    img.neighbor-image { width: 100px; image-rendering: pixelated; }
+</style>
 </head>
 <body>
+
 <h1>wordchef</h1>
 <p>This is a webapp which uses PHP + pgSQL w/ pgvector to lookup word embeddings, find their sum, and do a fast semantic similarity search to find the nearest five words.</p>
 
@@ -94,123 +129,102 @@ $average_array_string = '[' . implode(',', $average_array) . ']';
 </form>
 
 <?php
-
-// Generate vector image using external Python script
-function generate_vector_image($embedding_array, $word) {
-    $embedding_csv = implode(',', $embedding_array);
-    $python_venv = '/home/jackson/wordchef/wordchefenv/bin/python3';
-    $img_gen_script = '/var/www/wordchef.app/html/scripts/vector_image.py';
-
-    $cmd = escapeshellcmd($python_venv . ' ' . $img_gen_script) . ' '
-         . escapeshellarg($embedding_csv) . ' '
-         . escapeshellarg($word)
-         . ' 2>&1'; // redirect stderr -> stdout
-
-    $output = shell_exec($cmd);
-    return is_string($output) ? trim($output) : '';
-}
-
-// --- Collect available images ---
+// Collect base64 images for input words and average vector
 $images = [];
 
 if ($word_1 !== '') {
-    $img_path_1 = generate_vector_image($embedding_array_1, $word_1);
-    if (str_starts_with($img_path_1, '/var/www/wordchef.app/html/')) {
-        $images[$word_1] = str_replace('/var/www/wordchef.app/html/', '/', $img_path_1);
+    $base64_1 = generate_vector_image($embedding_array_1, $word_1);
+    if ($base64_1 !== '') {
+        $images[$word_1] = $base64_1;
     }
 }
 
 if ($word_2 !== '') {
-    $img_path_2 = generate_vector_image($embedding_array_2, $word_2);
-    if (str_starts_with($img_path_2, '/var/www/wordchef.app/html/')) {
-        $images[$word_2] = str_replace('/var/www/wordchef.app/html/', '/', $img_path_2);
+    $base64_2 = generate_vector_image($embedding_array_2, $word_2);
+    if ($base64_2 !== '') {
+        $images[$word_2] = $base64_2;
     }
 }
 
 if ($word_1 !== '' && $word_2 !== '') {
     $avg_label = "($word_1 + $word_2) / 2";
-    $safe_label = "($word_1 + $word_2)_avg"; // no slash, for file safety
-    $img_path_avg = generate_vector_image($average_array, $safe_label);
-    if (str_starts_with($img_path_avg, '/var/www/wordchef.app/html/')) {
-        $images[$avg_label] = str_replace('/var/www/wordchef.app/html/', '/', $img_path_avg);
+    $safe_label = "($word_1 + $word_2)_avg";
+    $base64_avg = generate_vector_image($average_array, $safe_label);
+    if ($base64_avg !== '') {
+        $images[$avg_label] = $base64_avg;
     }
 }
 
-// --- Display images in a single row ---
+// Display the images inline
 if (!empty($images)) {
-    echo "<table style='border-collapse:collapse; margin-top:10px; text-align:center;'><tr>";
-    foreach ($images as $label => $url) {
-        echo "<td style='padding:10px;'>";
-        echo "<div style='font-family:monospace; font-size:0.9em; margin-bottom:4px;'>"
-             . htmlspecialchars($label) . "</div>";
-        echo "<img src='" . htmlspecialchars($url, ENT_QUOTES) . "' "
-             . "alt='vector image' style='width:120px; image-rendering:pixelated; border:1px solid #ccc;'>";
+    echo "<table><tr>";
+    foreach ($images as $label => $base64_img) {
+        echo "<td>";
+        echo "<div class='vector-label'>" . htmlspecialchars($label) . "</div>";
+        echo "<img class='vector-image' src='data:image/png;base64," . htmlspecialchars($base64_img, ENT_QUOTES) . "' alt='vector image'>";
         echo "</td>";
     }
     echo "</tr></table>";
 }
 
-// Perform nearest-neighbor query safely
+// Query nearest neighbors
 $query = "SELECT * FROM wordembeddings ORDER BY embedding <-> $1 LIMIT 5";
 $result = pg_query_params($conn, $query, [$average_array_string]);
 
-// Display results in HTML table
 if ($result) {
-
-    // Determine display text
+    // Determine display heading
     if ($word_1 === '' && $word_2 === '') {
         echo "<h2>Both empty. Similar to zero:</h2><br>";
     } elseif ($word_1 === '') {
-        echo "<h2>$word_2 is similar to:</h2><br>";
+        echo "<h2>" . htmlspecialchars($word_2) . " is similar to:</h2><br>";
     } elseif ($word_2 === '') {
-        echo "<h2>$word_1 is similar to:</h2><br>";
+        echo "<h2>" . htmlspecialchars($word_1) . " is similar to:</h2><br>";
     } else {
-        echo "<h2>avg($word_1, $word_2) is similar to:</h2><br>";
+        echo "<h2>avg(" . htmlspecialchars($word_1) . ", " . htmlspecialchars($word_2) . ") is similar to:</h2><br>";
     }
 
-    echo "<table border='1' cellspacing='0' cellpadding='6' style='border-collapse:collapse; text-align:center;'>\n";
+    echo "<table>";
 
-    // Collect neighbors
+    // Collect neighbors and their images
     $neighbors = [];
     while ($row = pg_fetch_assoc($result)) {
         $neighbor_word = htmlspecialchars($row['word']);
         $embedding_str = $row['embedding'];
 
         $embedding_array = array_map('floatval', preg_split('/[,\s]+/', trim($embedding_str, '{}()')));
-        $img_path = generate_vector_image($embedding_array, $neighbor_word);
-        $img_url = str_replace('/var/www/wordchef.app/html/', '/', $img_path);
+        $base64_img = generate_vector_image($embedding_array, $neighbor_word);
 
         $neighbors[] = [
             'word' => $neighbor_word,
-            'img_url' => ($img_url && file_exists($img_path)) ? $img_url : null
+            'base64_img' => $base64_img !== '' ? $base64_img : null
         ];
     }
 
-    // First row: words
+    // Display neighbor words
     echo "<tr>";
     foreach ($neighbors as $n) {
-        echo "<th style='font-weight:bold; padding:8px;'>" . $n['word'] . "</th>";
+        echo "<th>" . $n['word'] . "</th>";
     }
-    echo "</tr>\n";
+    echo "</tr>";
 
-    // Second row: images
+    // Display neighbor images
     echo "<tr>";
     foreach ($neighbors as $n) {
-        if ($n['img_url']) {
-            echo "<td><img src='" . htmlspecialchars($n['img_url'], ENT_QUOTES) . "' alt='vector image' "
-                . "style='width:100px; image-rendering:pixelated;'></td>";
+        if ($n['base64_img']) {
+            echo "<td><img class='neighbor-image' src='data:image/png;base64," . htmlspecialchars($n['base64_img'], ENT_QUOTES) . "' alt='vector image'></td>";
         } else {
             echo "<td>(no image)</td>";
         }
     }
-    echo "</tr>\n";
+    echo "</tr>";
 
-    echo "</table>\n";
+    echo "</table>";
+
     pg_free_result($result);
 }
 
-// Close connection
 pg_close($conn);
 ?>
+
 </body>
 </html>
